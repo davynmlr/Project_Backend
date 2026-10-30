@@ -7,4 +7,8 @@ import fi.haagahelia.projectbackend.model.AppUser;
 public interface UserRepository extends CrudRepository<AppUser, Long> {
 
     AppUser findByUsername(String username);
+
+    boolean existsByUsername(String username);
+
+    boolean existsByEmailIgnoreCase(String email);
 }

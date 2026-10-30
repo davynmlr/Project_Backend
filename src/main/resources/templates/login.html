@@ -4,6 +4,7 @@
     <title>Login</title>
   </head>
   <body>
+    <div th:if="${param.registered}">Registration successful. You can now sign in.</div>
     <div th:if="${param.error}">Invalid username and password.</div>
     <form th:action="@{/login}" method="post">
       <div>
@@ -14,5 +15,6 @@
       </div>
       <div><input type="submit" value="Sign In" /></div>
     </form>
+    <p>No account yet? <a th:href="@{/register}">Register</a></p>
   </body>
 </html>

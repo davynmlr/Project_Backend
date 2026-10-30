@@ -20,7 +20,7 @@ public class AppUser {
     @Column(name = "password", nullable = false)
     private String passwordHash;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
 
     @Column(name = "role", nullable = false)
