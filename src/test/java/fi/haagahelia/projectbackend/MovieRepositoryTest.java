@@ -22,7 +22,7 @@ public class MovieRepositoryTest {
 
     private Movie saveTestMovie() {
         Genre genre = genreRepository.save(new Genre("TestGenre"));
-        Movie movie = new Movie("Test Movie", "Test Director", 2024, 3);
+        Movie movie = new Movie("Test Movie", "Test Director", 2024);
         movie.setGenre(genre);
         return repository.save(movie);
     }

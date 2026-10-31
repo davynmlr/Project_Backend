@@ -1,11 +1,18 @@
 package fi.haagahelia.projectbackend.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Movie {
@@ -17,20 +24,35 @@ public class Movie {
     private String title;
     private String director;
     private int releaseYear;
-    private int rating; // 1-5
 
     @ManyToOne
     @JoinColumn(name = "genreid")
     private Genre genre;
 
+    // Hidden from JSON so the API doesn't expose users (and their password hashes)
+    @JsonIgnore
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.REMOVE)
+    private List<Rating> ratings = new ArrayList<>();
+
     public Movie() {
     }
 
-    public Movie(String title, String director, int releaseYear, int rating) {
+    public Movie(String title, String director, int releaseYear) {
         this.title = title;
         this.director = director;
         this.releaseYear = releaseYear;
-        this.rating = rating;
+    }
+
+    // Average of everyone's ratings, or null if nobody has rated yet
+    public Double getAverageRating() {
+        if (ratings == null || ratings.isEmpty()) {
+            return null;
+        }
+        return ratings.stream().mapToInt(Rating::getScore).average().getAsDouble();
+    }
+
+    public int getRatingCount() {
+        return ratings == null ? 0 : ratings.size();
     }
 
     public Long getId() {
@@ -49,12 +71,12 @@ public class Movie {
         return releaseYear;
     }
 
-    public int getRating() {
-        return rating;
-    }
-
     public Genre getGenre() {
         return genre;
+    }
+
+    public List<Rating> getRatings() {
+        return ratings;
     }
 
     public void setId(Long id) {
@@ -73,12 +95,12 @@ public class Movie {
         this.releaseYear = releaseYear;
     }
 
-    public void setRating(int rating) {
-        this.rating = rating;
-    }
-
     public void setGenre(Genre genre) {
         this.genre = genre;
+    }
+
+    public void setRatings(List<Rating> ratings) {
+        this.ratings = ratings;
     }
 
     @Override

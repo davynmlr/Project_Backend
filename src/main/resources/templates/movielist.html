@@ -17,7 +17,8 @@
         <th>Title</th>
         <th>Director</th>
         <th>Year</th>
-        <th>Rating</th>
+        <th>Average rating</th>
+        <th>Your rating</th>
         <th>Genre</th>
         <th sec:authorize="hasAuthority('ADMIN')">Delete</th>
         <th>Edit</th>
@@ -26,7 +27,19 @@
         <td th:text="${movie.title}"></td>
         <td th:text="${movie.director}"></td>
         <td th:text="${movie.releaseYear}"></td>
-        <td th:text="${movie.rating} + ' / 5'"></td>
+        <td th:text="${movie.averageRating != null}
+            ? ${#numbers.formatDecimal(movie.averageRating, 1, 1)} + ' / 5 (' + ${movie.ratingCount} + ')'
+            : 'No ratings yet'"></td>
+        <td>
+          <form th:action="@{/rate/{id}(id=${movie.id})}" method="post" class="d-flex gap-1">
+            <select name="score" class="form-select form-select-sm" style="width: auto">
+              <option value="" th:if="${myRatings[movie.id] == null}" selected disabled>-</option>
+              <option th:each="s : ${#numbers.sequence(1, 5)}" th:value="${s}" th:text="${s}"
+                      th:selected="${myRatings[movie.id] == s}"></option>
+            </select>
+            <button type="submit" class="btn btn-sm btn-primary">Rate</button>
+          </form>
+        </td>
         <td th:text="${movie.genre != null} ? ${movie.genre.name} : ''"></td>
         <td sec:authorize="hasAuthority('ADMIN')">
           <a th:href="@{/delete/{id}(id=${movie.id})}" class="btn btn-danger">Delete</a>

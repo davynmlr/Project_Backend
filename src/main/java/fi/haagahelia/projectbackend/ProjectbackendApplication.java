@@ -9,8 +9,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import fi.haagahelia.projectbackend.model.AppUser;
 import fi.haagahelia.projectbackend.model.Genre;
 import fi.haagahelia.projectbackend.model.Movie;
+import fi.haagahelia.projectbackend.model.Rating;
 import fi.haagahelia.projectbackend.repository.GenreRepository;
 import fi.haagahelia.projectbackend.repository.MovieRepository;
+import fi.haagahelia.projectbackend.repository.RatingRepository;
 import fi.haagahelia.projectbackend.repository.UserRepository;
 
 @SpringBootApplication
@@ -21,7 +23,8 @@ public class ProjectbackendApplication {
 	}
 
 	@Bean
-	public CommandLineRunner demo(MovieRepository movieRepository, GenreRepository genreRepository, UserRepository userRepository) {
+	public CommandLineRunner demo(MovieRepository movieRepository, GenreRepository genreRepository, UserRepository userRepository,
+			RatingRepository ratingRepository) {
 		return (args) -> {
 
 			// GENRES
@@ -31,30 +34,38 @@ public class ProjectbackendApplication {
 			Genre animation = genreRepository.save(new Genre("Animation"));
 
 			// MOVIES
-			Movie inception = new Movie("Inception", "Christopher Nolan", 2010, 5);
+			Movie inception = new Movie("Inception", "Christopher Nolan", 2010);
 			inception.setGenre(sciFi);
 			movieRepository.save(inception);
 
-			Movie godfather = new Movie("The Godfather", "Francis Ford Coppola", 1972, 5);
+			Movie godfather = new Movie("The Godfather", "Francis Ford Coppola", 1972);
 			godfather.setGenre(crime);
 			movieRepository.save(godfather);
 
-			Movie amelie = new Movie("Amélie", "Jean-Pierre Jeunet", 2001, 4);
+			Movie amelie = new Movie("Amélie", "Jean-Pierre Jeunet", 2001);
 			amelie.setGenre(drama);
 			movieRepository.save(amelie);
 
-			Movie spiritedAway = new Movie("Spirited Away", "Hayao Miyazaki", 2001, 5);
+			Movie spiritedAway = new Movie("Spirited Away", "Hayao Miyazaki", 2001);
 			spiritedAway.setGenre(animation);
 			movieRepository.save(spiritedAway);
 
-			Movie bladeRunner = new Movie("Blade Runner", "Ridley Scott", 1982, 4);
+			Movie bladeRunner = new Movie("Blade Runner", "Ridley Scott", 1982);
 			bladeRunner.setGenre(sciFi);
 			movieRepository.save(bladeRunner);
 
 			// USERS
 			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-			userRepository.save(new AppUser("user", encoder.encode("password"), "user@example.com", "USER"));
-			userRepository.save(new AppUser("admin", encoder.encode("admin"), "admin@example.com", "ADMIN"));
+			AppUser user = userRepository.save(new AppUser("user", encoder.encode("password"), "user@example.com", "USER"));
+			AppUser admin = userRepository.save(new AppUser("admin", encoder.encode("admin"), "admin@example.com", "ADMIN"));
+
+			// RATINGS (each user rates movies separately; the list shows the average)
+			ratingRepository.save(new Rating(inception, user, 5));
+			ratingRepository.save(new Rating(inception, admin, 4));
+			ratingRepository.save(new Rating(godfather, admin, 5));
+			ratingRepository.save(new Rating(amelie, user, 4));
+			ratingRepository.save(new Rating(bladeRunner, user, 3));
+			ratingRepository.save(new Rating(bladeRunner, admin, 4));
 		};
 	}
 

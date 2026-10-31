@@ -15,8 +15,6 @@
         <input type="text" id="director" th:field="*{director}" />
         <label for="releaseYear">Release Year</label>
         <input type="text" id="releaseYear" th:field="*{releaseYear}" />
-        <label for="rating">Rating (1-5)</label>
-        <input type="number" id="rating" min="1" max="5" th:field="*{rating}" />
         <label for="genre">Genre</label>
         <select id="genre" th:field="*{genre}">
           <option th:each="genre : ${genres}" th:value="${genre.id}" th:text="${genre.name}"></option>
