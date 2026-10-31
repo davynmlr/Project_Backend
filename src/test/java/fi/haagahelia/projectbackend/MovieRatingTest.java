@@ -44,7 +44,8 @@ public class MovieRatingTest {
         // Inception is seeded with ratings 5 and 4
         mockMvc.perform(get("/movielist"))
             .andExpect(status().isOk())
-            .andExpect(content().string(containsString("4.5 / 5 (2)")));
+            .andExpect(content().string(containsString(">4.5</span>")))
+            .andExpect(content().string(containsString("2 ratings")));
     }
 
     @Test

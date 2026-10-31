@@ -1,9 +1,16 @@
 <!doctype html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <title>FilmFavourites</title>
-  </head>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="~{fragments :: head('Home')}"></head>
   <body>
-    <h1>Welcome to the FilmFavourites</h1>
+    <nav th:replace="~{fragments :: navbar('')}"></nav>
+
+    <main class="container">
+      <section class="hero">
+        <h1>Your films, rated by everyone</h1>
+        <p>Add the movies you love, give them your own score, and see what everyone else thinks.</p>
+        <a th:href="@{/movielist}" class="btn btn-primary">Browse movies</a>
+        <a th:href="@{/add}" class="btn btn-ghost">Add a movie</a>
+      </section>
+    </main>
   </body>
 </html>

@@ -1,0 +1,39 @@
+<!doctype html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+>
+  <!-- Shared pieces used by every page -->
+
+  <head th:fragment="head(title)">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title th:text="${title} + ' · FilmFavourites'">FilmFavourites</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    />
+    <link rel="stylesheet" th:href="@{/css/app.css}" />
+  </head>
+
+  <body>
+    <nav th:fragment="navbar(active)" class="navbar">
+      <a th:href="@{/movielist}" class="brand"><span class="brand-logo">★</span> FilmFavourites</a>
+      <div class="nav-links">
+        <a th:href="@{/movielist}" th:classappend="${active == 'movies'} ? 'active'">Movies</a>
+        <a th:href="@{/add}" th:classappend="${active == 'add'} ? 'active'">Add movie</a>
+      </div>
+      <div class="nav-user">
+        <span class="avatar" th:text="${#strings.substring(#authentication.name, 0, 1)}">U</span>
+        <span class="username" sec:authentication="name">user</span>
+        <span class="badge" sec:authorize="hasAuthority('ADMIN')">ADMIN</span>
+        <form th:action="@{/logout}" method="post">
+          <button type="submit" class="btn btn-ghost btn-sm">Sign out</button>
+        </form>
+      </div>
+    </nav>
+
+    <a th:fragment="brand" th:href="@{/}" class="brand"><span class="brand-logo">★</span> FilmFavourites</a>
+  </body>
+</html>

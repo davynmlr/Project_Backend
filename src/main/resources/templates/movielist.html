@@ -1,57 +1,113 @@
 <!doctype html>
 <html
-  xmlns="http://www.w3.org/1999/xhtml"
   xmlns:th="http://www.thymeleaf.org"
   xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
 >
-  <head>
-    <title>FilmFavourites</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link type="text/css" rel="stylesheet" href="/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" />
-  </head>
+  <head th:replace="~{fragments :: head('Movies')}"></head>
   <body>
-    <h1>Hello <span sec:authentication="name"></span>!</h1>
-    <h1>Movies</h1>
-    <table class="table table-striped">
-      <tr>
-        <th>Title</th>
-        <th>Director</th>
-        <th>Year</th>
-        <th>Average rating</th>
-        <th>Your rating</th>
-        <th>Genre</th>
-        <th sec:authorize="hasAuthority('ADMIN')">Delete</th>
-        <th>Edit</th>
-      </tr>
-      <tr th:each="movie : ${movies}">
-        <td th:text="${movie.title}"></td>
-        <td th:text="${movie.director}"></td>
-        <td th:text="${movie.releaseYear}"></td>
-        <td th:text="${movie.averageRating != null}
-            ? ${#numbers.formatDecimal(movie.averageRating, 1, 1)} + ' / 5 (' + ${movie.ratingCount} + ')'
-            : 'No ratings yet'"></td>
-        <td>
-          <form th:action="@{/rate/{id}(id=${movie.id})}" method="post" class="d-flex gap-1">
-            <select name="score" class="form-select form-select-sm" style="width: auto">
-              <option value="" th:if="${myRatings[movie.id] == null}" selected disabled>-</option>
-              <option th:each="s : ${#numbers.sequence(1, 5)}" th:value="${s}" th:text="${s}"
-                      th:selected="${myRatings[movie.id] == s}"></option>
-            </select>
-            <button type="submit" class="btn btn-sm btn-primary">Rate</button>
-          </form>
-        </td>
-        <td th:text="${movie.genre != null} ? ${movie.genre.name} : ''"></td>
-        <td sec:authorize="hasAuthority('ADMIN')">
-          <a th:href="@{/delete/{id}(id=${movie.id})}" class="btn btn-danger">Delete</a>
-        </td>
-        <td>
-          <a th:href="@{/edit/{id}(id=${movie.id})}">Edit</a>
-        </td>
-      </tr>
-    </table>
-    <p><a th:href="@{/add}" class="btn btn-success">Add Movie</a></p>
-    <form th:action="@{/logout}" method="post">
-      <input type="submit" value="Sign Out" />
-    </form>
+    <nav th:replace="~{fragments :: navbar('movies')}"></nav>
+
+    <main class="container">
+      <div class="page-header">
+        <div>
+          <h1>Movies</h1>
+          <p class="muted">
+            <span th:text="${#lists.size(movies)}">0</span> films · click the stars to rate them
+          </p>
+        </div>
+        <a th:href="@{/add}" class="btn btn-primary">+ Add movie</a>
+      </div>
+
+      <div class="toolbar" th:unless="${#lists.isEmpty(movies)}">
+        <input id="search" type="search" class="input search" placeholder="Search by title, director or genre…" />
+      </div>
+
+      <div class="movie-grid" id="movie-grid">
+        <article
+          class="card movie"
+          th:each="movie : ${movies}"
+          th:attr="data-search=${#strings.toLowerCase(movie.title + ' ' + movie.director + ' ' + (movie.genre != null ? movie.genre.name : ''))}"
+        >
+          <div class="movie-top">
+            <div>
+              <h2 class="movie-title" th:text="${movie.title}">Title</h2>
+              <p class="movie-meta">
+                <span th:text="${movie.director}">Director</span> ·
+                <span th:text="${movie.releaseYear}">2000</span>
+              </p>
+            </div>
+            <span class="chip" th:if="${movie.genre != null}" th:text="${movie.genre.name}">Genre</span>
+          </div>
+
+          <div class="rating-block">
+            <div>
+              <div class="rating-label">Average</div>
+              <div th:if="${movie.averageRating != null}">
+                <div class="avg">
+                  <span class="avg-number" th:text="${#numbers.formatDecimal(movie.averageRating, 1, 1)}">4.5</span>
+                  <span class="avg-count" th:text="${movie.ratingCount == 1} ? '1 rating' : ${movie.ratingCount} + ' ratings'">2 ratings</span>
+                </div>
+                <span class="stars"
+                  >★★★★★<span class="stars-fill" th:style="'width:' + ${movie.averageRating * 20} + '%'">★★★★★</span></span
+                >
+              </div>
+              <div th:if="${movie.averageRating == null}" class="muted">No ratings yet</div>
+            </div>
+
+            <div>
+              <div class="rating-label">Your rating</div>
+              <form th:action="@{/rate/{id}(id=${movie.id})}" method="post" class="star-input">
+                <button
+                  type="submit"
+                  name="score"
+                  th:each="s : ${#numbers.sequence(5, 1, -1)}"
+                  th:value="${s}"
+                  th:title="'Rate ' + ${s} + ' / 5'"
+                  th:classappend="${myRatings[movie.id] != null and s <= myRatings[movie.id]} ? 'on'"
+                >
+                  ★
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <div class="movie-actions">
+            <a th:href="@{/edit/{id}(id=${movie.id})}" class="btn btn-ghost btn-sm">Edit</a>
+            <a
+              sec:authorize="hasAuthority('ADMIN')"
+              th:href="@{/delete/{id}(id=${movie.id})}"
+              class="btn btn-danger btn-sm"
+              onclick="return confirm('Delete this movie and all its ratings?')"
+              >Delete</a
+            >
+          </div>
+        </article>
+      </div>
+
+      <div class="card empty" th:if="${#lists.isEmpty(movies)}">
+        <p>No movies yet.</p>
+        <a th:href="@{/add}" class="btn btn-primary">Add the first one</a>
+      </div>
+      <div class="card empty" id="no-results" hidden>No movies match your search.</div>
+    </main>
+
+    <script>
+      // Simple client-side filter for the movie cards
+      const search = document.getElementById("search");
+      if (search) {
+        const cards = document.querySelectorAll("#movie-grid .movie");
+        const noResults = document.getElementById("no-results");
+        search.addEventListener("input", () => {
+          const q = search.value.trim().toLowerCase();
+          let shown = 0;
+          cards.forEach((card) => {
+            const match = card.dataset.search.includes(q);
+            card.hidden = !match;
+            if (match) shown++;
+          });
+          noResults.hidden = shown > 0;
+        });
+      }
+    </script>
   </body>
 </html>

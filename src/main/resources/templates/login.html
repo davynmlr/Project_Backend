@@ -1,22 +1,35 @@
 <!doctype html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <title>Login</title>
-  </head>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="~{fragments :: head('Sign in')}"></head>
   <body>
-    <div th:if="${param.registered}">Registration successful. You can now sign in.</div>
-    <div th:if="${param.reset}">Your password has been changed. You can now sign in.</div>
-    <div th:if="${param.error}">Invalid username and password.</div>
-    <form th:action="@{/login}" method="post">
-      <div>
-        <label>User Name: <input type="text" name="username" /></label>
+    <main class="auth-wrap">
+      <div class="card auth-card">
+        <a th:replace="~{fragments :: brand}"></a>
+        <h1>Welcome back</h1>
+        <p class="subtitle">Sign in to rate your favourite films</p>
+
+        <div class="alert alert-success" th:if="${param.registered}">Registration successful. You can now sign in.</div>
+        <div class="alert alert-success" th:if="${param.reset}">Your password has been changed. You can now sign in.</div>
+        <div class="alert alert-success" th:if="${param.logout}">You have been signed out.</div>
+        <div class="alert alert-error" th:if="${param.error}">Invalid username or password.</div>
+
+        <form th:action="@{/login}" method="post">
+          <div class="field">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" class="input" autocomplete="username" required autofocus />
+          </div>
+          <div class="field">
+            <label for="password">
+              Password
+              <a th:href="@{/forgot-password}">Forgot password?</a>
+            </label>
+            <input type="password" id="password" name="password" class="input" autocomplete="current-password" required />
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+        </form>
+
+        <p class="auth-footer">No account yet? <a th:href="@{/register}">Create one</a></p>
       </div>
-      <div>
-        <label>Password: <input type="password" name="password" /></label>
-      </div>
-      <div><input type="submit" value="Sign In" /></div>
-    </form>
-    <p><a th:href="@{/forgot-password}">Forgot password?</a></p>
-    <p>No account yet? <a th:href="@{/register}">Register</a></p>
+    </main>
   </body>
 </html>
