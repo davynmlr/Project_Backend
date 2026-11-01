@@ -1,5 +1,6 @@
 package fi.haagahelia.projectbackend.web;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,13 +16,11 @@ import jakarta.validation.Valid;
 @Controller
 public class RegisterController {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserRepository userRepository;
 
-    public RegisterController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @GetMapping("/register")
     public String showRegisterForm(Model model) {

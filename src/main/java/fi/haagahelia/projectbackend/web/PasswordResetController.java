@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
@@ -32,21 +33,20 @@ public class PasswordResetController {
     private static final int TOKEN_VALID_MINUTES = 30;
     private static final String INVALID_LINK = "This reset link is invalid or has expired.";
 
-    private final UserRepository userRepository;
-    private final PasswordResetTokenRepository tokenRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JavaMailSender mailSender;
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordResetTokenRepository tokenRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JavaMailSender mailSender;
 
     @Value("${app.mail.from:${spring.mail.username:}}")
     private String mailFrom;
-
-    public PasswordResetController(UserRepository userRepository, PasswordResetTokenRepository tokenRepository,
-            PasswordEncoder passwordEncoder, JavaMailSender mailSender) {
-        this.userRepository = userRepository;
-        this.tokenRepository = tokenRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.mailSender = mailSender;
-    }
 
     @GetMapping("/forgot-password")
     public String showForgotPassword() {

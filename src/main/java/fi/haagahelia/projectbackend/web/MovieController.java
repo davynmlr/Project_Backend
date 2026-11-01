@@ -69,7 +69,7 @@ public class MovieController {
         if (myRating != null) {
             saveRating(saved, principal, myRating);
         }
-        return "redirect:movielist";
+        return "redirect:/movielist";
     }
 
     @PostMapping("/rate/{id}")
@@ -90,7 +90,7 @@ public class MovieController {
     @RequestMapping("/delete/{id}")
     public String deleteMovie(@PathVariable("id") Long movieId) {
         movieRepository.deleteById(movieId);
-        return "redirect:../movielist";
+        return "redirect:/movielist";
     }
 
     // Creates the user's rating for this movie, or updates it if they already rated it
