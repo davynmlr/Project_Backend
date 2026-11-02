@@ -26,6 +26,12 @@ public class ProjectbackendApplication {
 	public CommandLineRunner demo(MovieRepository movieRepository, GenreRepository genreRepository, UserRepository userRepository,
 			RatingRepository ratingRepository) {
 		return (args) -> {
+			// The database keeps its data between restarts, so only seed an empty one.
+			// Users are checked (not movies) because an admin can delete every movie,
+			// and re-creating "user"/"admin" would break their unique username.
+			if (userRepository.count() > 0) {
+				return;
+			}
 
 			// GENRES
 			Genre sciFi = genreRepository.save(new Genre("Science Fiction"));

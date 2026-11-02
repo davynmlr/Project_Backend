@@ -5,8 +5,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Column;
+import jakarta.persistence.Table;
 
-@Entity(name = "users")
+// Own table name: the bookstore app uses "users" in the same davynm database
+@Entity
+@Table(name = "movie_users")
 public class AppUser {
 
     @Id
