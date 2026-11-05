@@ -26,6 +26,9 @@ The app runs on http://localhost:7076. It uses MySQL on softala, so open the SSH
 ssh -L 3306:localhost:3306 -R 1025:localhost:1025 davynm@softala.haaga-helia.fi
 → take in account that the -R 1025:localhost:1025 is for mailpit, so no need of it if you use the gmail part
 
+
+```
+
 then in the ssh:
 
 ```
@@ -48,6 +51,7 @@ Test users: `user` / `password` and `admin` / `admin`.
 
 ## Deploy
 
+```
 `deploy.sh` builds the jar and uploads it to softala.
 
 ```
